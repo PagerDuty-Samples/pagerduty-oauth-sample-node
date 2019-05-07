@@ -10,7 +10,7 @@ const baseAuthUrl = "http://app.pagerduty.com/oauth/authorize";
 const authParams = {
     response_type: 'token',
     client_id: config.PD_CLIENT_ID,
-    redirect_uri: "https://6d65c87d.ngrok.io/callback"
+    redirect_uri: config.REDIRECT_URI
 };
 
 function buildAuthUrl(params) {
@@ -35,8 +35,6 @@ app.get('/auth', (req, res) => {
 app.get('/callback', (req, res) => {
     console.log(req);
 
-    // retrieve code and request access token
-
-    // e01f9ba03c6d965467d3f95c124aa9569f60b922c1be0b3dc67e478f91c8b550
+    // TODO: retrieve code and request access token
 });
 
