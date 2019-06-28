@@ -22,8 +22,16 @@ Take those three values and plug them into the `config.json` file in this projec
     "REDIRECT_URI": "http://localhost:5000/callback"
 }
 ```
+## Run Sample
+To use this sample, you'll need to perform `npm install` at the root of the project directory. This will install three dependent packages [request](https://github.com/request/request), [node-pagerduty](https://github.com/kmart2234/node-pagerduty), and [express](https://github.com/expressjs/express).
 
-## Initiate Flow
+To run the sample run `node index.js`. You should be greeted with a message that says, `Express server running on port 5000`. 
+
+In your browser, go to `http://localhost:5000` where you'll see a link to `Connect to PagerDuty`. Click that to initiate the OAuth flow. You'll be taken to PagerDuty, where you'll be asked to login (if necessary), and then to authorize access of your PagerDuty account to the sample application.
+
+If all goes well, the callback page on the sample should present a friendly welcome message, along with your avatar.
+
+## How This Works
 To initiate the flow make a `GET` call to `https://app.pagerduty.com/oauth/authorize` with the query string parameters listed in `authParams` as seen below.
 
 ```javascript
@@ -81,14 +89,5 @@ pd.users.getCurrentUser({})
     });
 ```
 
-## Run Sample
-To use this sample, you'll need to perform `npm install` at the root of the project directory. This will install three dependent packages [request](https://github.com/request/request), [node-pagerduty](https://github.com/kmart2234/node-pagerduty), and [express](https://github.com/expressjs/express).
-
-To run the sample run `node index.js`. You should be greeted with a message that says, `Express server running on port 5000`. 
-
-In your browser, go to `http://localhost:5000` where you'll see a link to `Connect to PagerDuty`. Click that to initiate the OAuth flow. You'll be taken to PagerDuty, where you'll be asked to login (if necessary), and then to authorize access of your PagerDuty account to the sample application.
-
-If all goes well, the callback page on the sample should present a friendly welcome message, along with your avatar.
-
-If all did not go well, or if you have any questions please post to the [Developer Forums](https://community.pagerduty.com/c/dev).
+Please post to the [Developer Forums](https://community.pagerduty.com/c/dev) if you get stuck or have any questions.
 
