@@ -27,11 +27,14 @@ Take those three values and plug them into the `config.json` file in this projec
 To initiate the flow make a `GET` call to `https://app.pagerduty.com/oauth/authorize` with the query string parameters listed in `authParams` as seen below.
 
 ```javascript
+const baseOAuthUrl = "https://app.pagerduty.com/oauth";
+
 const authParams = {
     response_type: 'code',
     client_id: config.PD_CLIENT_ID,
     redirect_uri: config.REDIRECT_URI
 };
+const authUrl = `${baseOAuthUrl}/authorize?${qs.stringify(authParams)}`;
 ```
 The values for `client_id` and `redirect_uri` are taken from `config.json`, and `response_type` is important as it tells PagerDuty what type of flow you initiating. In this case, by setting `response_type: 'code'` we are kicking off an Authorization Grant Flow.
 
@@ -49,7 +52,34 @@ const tokenParams = {
 };
 ```
 
-In our project we want to make sure the newly acquired Access Token works, so we use the [node-pagerduty](https://github.com/kmart2234/node-pagerduty) library to make a request on the REST API. To show which account the access token belongs to, our sample gets the current user. 
+Using the [request](https://github.com/request/request) library this call looks like this:
+
+```javascript
+request.post(`${baseOAuthUrl}/token`, {
+    json: tokenParams     
+}, (error, tres, body) => {
+    ...
+}
+```
+Inside the callback function for the POST to `/token` we first check if there are any errors and log them to the console:
+```javascript
+if (error) {
+    console.error(error);
+    return;
+}
+```
+Then, we use the [node-pagerduty](https://github.com/kmart2234/node-pagerduty) library to make a request to the [PagerDuty REST API](https://v2.developer.pagerduty.com/docs/rest-api) to make sure the newly acquired Access Token works.
+
+```javascript
+const pd = new pdClient(body.access_token, body.token_type);
+pd.users.getCurrentUser({})
+    .then(uRes => {
+        res.send(`<h1>PagerDuty OAuth2 Sample</h1><div><img src='${JSON.parse(uRes.body).user.avatar_url}' /> <h2>Hello, ${JSON.parse(uRes.body).user.name}!</h2></div>`);
+    })
+    .catch(err => {
+        console.log(err);
+    });
+```
 
 ## Run Sample
 To use this sample, you'll need to perform `npm install` at the root of the project directory. This will install three dependent packages [request](https://github.com/request/request), [node-pagerduty](https://github.com/kmart2234/node-pagerduty), and [express](https://github.com/expressjs/express).
