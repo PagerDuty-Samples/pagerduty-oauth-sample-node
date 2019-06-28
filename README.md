@@ -1,14 +1,12 @@
 # pagerduty-oauth-sample-node
 # *** TODO: BEFORE MAKING REPO PUBLIC REMOVE CLIENT_ID AND SECRET. :) ***
-This is a sample project to illustrate how to build an OAuth flow in Node to authorize access to a user's PagerDuty account and data.
+This is a sample project to illustrate how to build a PagerDuty OAuth flow in Node to authorize access to a user's PagerDuty account and data.
 
 If you're an application builder, users of your application will need to access their PagerDuty data in a safe and secure way. This is done through an access token that can be [manually generated](https://support.pagerduty.com/docs/generating-api-keys) by the user in the PagerDuty UI. Or, you can provide an automated process by implementing an OAuth flow in your application.
 
-## What is OAuth
-*should this section be here?*
 
 ## Enable OAuth
-To enable OAuth for your application, you'll first need to register your app for the PagerDuty API. Instructions for registering your application can be found in [this article (NEEDS LINK)]().
+To enable OAuth for your application, you'll first need to register your app in the PagerDuty UI. Instructions for registering your application can be found in [this article (NEEDS LINK)]().
 
 ## Configure Sample
 Once you have registered your App, there are a few key pieces of information you'll need to build your OAuth flow. In the **App Functionality** section you'll need to grab the value(s) for **Redirect URLs**, the **Client Id** and **Client Secret**. 
@@ -22,16 +20,21 @@ Take those three values and plug them into the `config.json` file in this projec
     "REDIRECT_URI": "http://localhost:5000/callback"
 }
 ```
+The value for `REDIRECT_URI` can use whichever domain you have this code running on, for our purposes of testing and exploring we'll use `http://localhost:5000` as the domain, and `/callback` is the endpoint our sample application uses to process the callback, so you'll need to keep that.
+
+
 ## Run Sample
-To use this sample, you'll need to perform `npm install` at the root of the project directory. This will install three dependent packages [request](https://github.com/request/request), [node-pagerduty](https://github.com/kmart2234/node-pagerduty), and [express](https://github.com/expressjs/express).
+To use this sample, you'll need to perform `npm install` at the root of the project directory. This will install three dependent npm packages [request](https://github.com/request/request), [node-pagerduty](https://github.com/kmart2234/node-pagerduty), and [express](https://github.com/expressjs/express).
 
-To run the sample run `node index.js`. You should be greeted with a message that says, `Express server running on port 5000`. 
+Next, call `node index.js`, after which you should be greeted by a message that says, `Express server running on port 5000`. 
 
-In your browser, go to `http://localhost:5000` where you'll see a link to `Connect to PagerDuty`. Click that to initiate the OAuth flow. You'll be taken to PagerDuty, where you'll be asked to login (if necessary), and then to authorize access of your PagerDuty account to the sample application.
+In your browser, go to [http://localhost:5000](http://localhost:5000) where you'll see a link to `Connect to PagerDuty`. Click that to initiate the OAuth flow. You'll be taken to PagerDuty, where you'll be asked to login (if necessary), and then to authorize access of your PagerDuty account to the sample application.
 
 If all goes well, the callback page on the sample should present a friendly welcome message, along with your avatar.
 
-## How This Works
+## The Code
+Authorizing through OAuth involves making a request to PagerDuty for an authorization code. That request includes the Client ID that was generated when registering your app as well as the Redirect URI.
+
 To initiate the flow make a `GET` call to `https://app.pagerduty.com/oauth/authorize` with the query string parameters listed in `authParams` as seen below.
 
 ```javascript
@@ -44,11 +47,11 @@ const authParams = {
 };
 const authUrl = `${baseOAuthUrl}/authorize?${qs.stringify(authParams)}`;
 ```
-The values for `client_id` and `redirect_uri` are taken from `config.json`, and `response_type` is important as it tells PagerDuty what type of flow you initiating. In this case, by setting `response_type: 'code'` we are kicking off an Authorization Grant Flow.
+The values for `client_id` and `redirect_uri` are taken from `config.json`, and `response_type` is important as it tells PagerDuty what type of flow is being initiated. In this case, by setting `response_type: 'code'` the flow is an Authorization Grant Flow.
 
-A successful response from calling the `/oauth/authorize` endpoint should result in PagerDuty calling the `redirect_uri` you specified, which is the `/callback` in this project. The function at the `/callback` endpoint is expecting PagerDuty to send a `code` in the query string. Using this `code` and the `PD_CLIENT_SECRET` in `config.json` you are now ready to request an Access Token. 
+A successful response from calling the `https://app.pagerduty.com/oauth/authorize` endpoint should result in PagerDuty calling the `redirect_uri` you specified, which is the `/callback` in this project. The function at `/callback` is expecting PagerDuty to send a `code` in the query string. Using this `code` and the `PD_CLIENT_SECRET` in `config.json` you are now ready to request an access token. 
 
-To request an access token from PagerDuty you'll `POST` the following token parameters in the body of the request to `https://app.pagerduty.com/oauth/token`. 
+To request an access token from PagerDuty you'll `POST` the values from `tokenParams` shown below in the body of the request to `https://app.pagerduty.com/oauth/token`. 
 
 ```javascript
 const tokenParams = {
@@ -69,14 +72,14 @@ request.post(`${baseOAuthUrl}/token`, {
     ...
 }
 ```
-Inside the callback function for the POST to `/token` we first check if there are any errors and log them to the console:
+Inside the callback function for the `POST` to `/token` we first check if there are any errors and log them to the console:
 ```javascript
 if (error) {
     console.error(error);
     return;
 }
 ```
-Then, we use the [node-pagerduty](https://github.com/kmart2234/node-pagerduty) library to make a request to the [PagerDuty REST API](https://v2.developer.pagerduty.com/docs/rest-api) to make sure the newly acquired Access Token works.
+Then, using the [node-pagerduty](https://github.com/kmart2234/node-pagerduty) library the sample calls the [PagerDuty REST API](https://v2.developer.pagerduty.com/docs/rest-api) to get the current user, or the owner the of the access token.
 
 ```javascript
 const pd = new pdClient(body.access_token, body.token_type);
@@ -89,5 +92,5 @@ pd.users.getCurrentUser({})
     });
 ```
 
-Please post to the [Developer Forums](https://community.pagerduty.com/c/dev) if you get stuck or have any questions.
+Hopefully, this sample helped to illustrate how to impliment an OAuth flow with PagerDuty using Node. Please post to the [Developer Forums](https://community.pagerduty.com/c/dev) if you get stuck or have any questions.
 
