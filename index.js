@@ -31,7 +31,6 @@ app.get('/auth', (req, res) => {
 });
 
 app.get('/callback', (req, res) => {
-    // retrieve code and request access token
     const tokenParams = {
         grant_type: `authorization_code`,
         client_id: config.PD_CLIENT_ID,
@@ -39,7 +38,8 @@ app.get('/callback', (req, res) => {
         code: req.query.code,
         redirect_uri: config.REDIRECT_URI
     };
-
+    
+    // retrieve code and request access token
     request.post(`${baseOAuthUrl}/token`, {
         json: tokenParams     
     }, (error, tres, body) => {
