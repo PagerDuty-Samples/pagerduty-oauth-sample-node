@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.4",
-    "node-pagerduty": "^1.1.4",
+    "node-pagerduty": "^1.1.5",
     "request": "^2.88.0"
   }
 }

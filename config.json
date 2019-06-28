@@ -1,5 +1,5 @@
 {
     "PD_CLIENT_ID": "1f6a4812aa831be7f4539d6ae37b05858f54a7f626ae49c3155aa62a54d7f1a4",
     "PD_CLIENT_SECRET": "9cf8e6e629862f590ece9685890b3f3eaf01e7398e1b522654bfa2a53bd28daa",
-    "REDIRECT_URI": "https://e3c53fda.ngrok.io/callback"
+    "REDIRECT_URI": "http://localhost:5000/callback"
 }

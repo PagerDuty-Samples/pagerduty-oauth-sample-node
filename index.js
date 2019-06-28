@@ -7,50 +7,23 @@ const config = require('./config.json');
 const app = express();
 const port = 5000;
 
+// baseOAuthUrl -- endpoint for initiating an OAuth flow
+const baseOAuthUrl = "https://app.pagerduty.com/oauth";
 
-const baseAuthUrl = "http://app.pagerduty.com/oauth";
-
+// parameters to send to the `oauth/authorize` endpoint to initiate flow
 const authParams = {
     response_type: 'code',
     client_id: config.PD_CLIENT_ID,
     redirect_uri: config.REDIRECT_URI
 };
-
-function buildAuthUrl(params) {
-    return `${baseAuthUrl}/authorize?${qs.stringify(params)}`;
-}
-
-const authUrl = buildAuthUrl(authParams);
-
-function getAccessToken(tParams) {
-    let pdToken = {};
-
-    request.post(`${baseAuthUrl}/token`, {
-        json: tParams     
-    }, (error, res, body) => {
-        if (error) {
-            console.error(error);
-            return;
-        }
-        // test token
-        const pd = new pdClient(body.access_token, body.token_type);
-        pd.schedules.listSchedule({})
-            .then(res => {
-                console.log(res.body);
-            })
-            .catch(err => {
-                console.log(err);
-            });
-        
-    });
-}
+const authUrl = `${baseOAuthUrl}/authorize?${qs.stringify(authParams)}`;
 
 app.listen(port, () => {
     console.log(`Express server running on port ${port}`);
 });
 
 app.get('/',  (req, res) => {
-    res.send(`<a href="/auth">Connect to PagerDuty</a>`);
+    res.send(`<h1>PagerDuty OAuth2 Sample</h1><a href="/auth">Connect to PagerDuty</a>`);
 });
 
 app.get('/auth', (req, res) => {
@@ -58,8 +31,6 @@ app.get('/auth', (req, res) => {
 });
 
 app.get('/callback', (req, res) => {
-    console.log(req.query);
-
     // retrieve code and request access token
     const tokenParams = {
         grant_type: `authorization_code`,
@@ -69,6 +40,22 @@ app.get('/callback', (req, res) => {
         redirect_uri: config.REDIRECT_URI
     };
 
-    getAccessToken(tokenParams);
+    request.post(`${baseOAuthUrl}/token`, {
+        json: tokenParams     
+    }, (error, tres, body) => {
+        if (error) {
+            console.error(error);
+            return;
+        }
+        // Use the access token to make a call to the PagerDuty API
+        const pd = new pdClient(body.access_token, body.token_type);
+        pd.users.getCurrentUser({})
+            .then(uRes => {
+                res.send(`<h1>PagerDuty OAuth2 Sample</h1><div><img src='${JSON.parse(uRes.body).user.avatar_url}' /> <h2>Hello, ${JSON.parse(uRes.body).user.name}!</h2></div>`);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    });
 });
 
