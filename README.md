@@ -85,7 +85,8 @@ Then, using the [node-pagerduty](https://github.com/kmart2234/node-pagerduty) li
 const pd = new pdClient(body.access_token, body.token_type);
 pd.users.getCurrentUser({})
     .then(uRes => {
-        res.send(`<h1>PagerDuty OAuth2 Sample</h1><div><img src='${JSON.parse(uRes.body).user.avatar_url}' /> <h2>Hello, ${JSON.parse(uRes.body).user.name}!</h2></div>`);
+        res.send(`<h1>PagerDuty OAuth2 Sample</h1><div><img src='${JSON.parse(uRes.body).user.avatar_url}' />
+                  <h2>Hello, ${JSON.parse(uRes.body).user.name}!</h2></div>`);
     })
     .catch(err => {
         console.log(err);
