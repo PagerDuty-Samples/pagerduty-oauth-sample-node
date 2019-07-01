@@ -1,5 +1,5 @@
 # pagerduty-oauth-sample-node
-# *** TODO: BEFORE MAKING REPO PUBLIC REMOVE CLIENT_ID AND SECRET. :) ***
+
 This is a sample project to illustrate how to build a PagerDuty OAuth flow in Node to authorize access to a user's PagerDuty account and data.
 
 If you're an application builder, users of your application will need to access their PagerDuty data in a safe and secure way. This is done through an access token that can be [manually generated](https://support.pagerduty.com/docs/generating-api-keys) by the user in the PagerDuty UI. Or, you can provide an automated process by implementing an OAuth flow in your application.
