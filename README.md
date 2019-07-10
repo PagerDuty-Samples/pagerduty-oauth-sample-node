@@ -6,7 +6,7 @@ If you're an application builder, users of your application will need to access 
 
 
 ## Enable OAuth
-To enable OAuth for your application, you'll first need to register your app in the PagerDuty UI. Instructions for registering your application can be found in [this article (NEEDS LINK)]().
+To enable OAuth for your application, you'll first need to register your app in the PagerDuty UI. Instructions for registering your application can be found in [this article (coming soon)]().
 
 ## Configure Sample
 Once you have registered your App, there are a few key pieces of information you'll need to build your OAuth flow. In the **App Functionality** section you'll need to grab the value(s) for **Redirect URLs**, the **Client Id** and **Client Secret**. 
