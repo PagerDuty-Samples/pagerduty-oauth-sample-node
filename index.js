@@ -31,6 +31,11 @@ app.get('/auth', (req, res) => {
 });
 
 app.get('/callback', (req, res) => {
+    // first check if the request contains any errors and display them to the browser
+    if (req.query.error) {
+        res.send(`<h1>PagerDuty OAuth2 Sample</h1><div style="color:red;">Error: ${req.query.error}</div><div style="color:red;">${req.query.error_description}</div>`);
+        return;
+    }
     const tokenParams = {
         grant_type: `authorization_code`,
         client_id: config.PD_CLIENT_ID,
