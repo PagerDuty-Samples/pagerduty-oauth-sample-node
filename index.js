@@ -5,7 +5,7 @@ const pdClient = require('node-pagerduty');
 
 const config = require('./config.json');
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 // baseOAuthUrl -- endpoint for initiating an OAuth flow
 const baseOAuthUrl = "https://app.pagerduty.com/oauth";
