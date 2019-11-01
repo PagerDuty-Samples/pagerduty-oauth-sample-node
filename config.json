@@ -1,5 +1,5 @@
 {
-    "PD_CLIENT_ID": "d41fb37414248df3ebc23ec9c7869956a05d8aaa079ed606b3b6b092cb0974cb",
-    "PD_CLIENT_SECRET": "9248142b88422a8766ddac73e4b1547611223e7e9d7453910c05be2c4da3fa89",
-    "REDIRECT_URI": "https://morning-sands-25471.herokuapp.com/callback"
+    "PD_CLIENT_ID": "",
+    "PD_CLIENT_SECRET": "",
+    "REDIRECT_URI": "http://localhost:5000/callback"
 }

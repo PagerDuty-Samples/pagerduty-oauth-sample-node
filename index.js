@@ -6,6 +6,7 @@ const pdClient = require('node-pagerduty');
 const config = require('./config.json');
 const app = express();
 const port = process.env.PORT || 5000;
+const stateParm = "yourState";
 
 // baseOAuthUrl -- endpoint for initiating an OAuth flow
 const baseOAuthUrl = "https://app.pagerduty.com/oauth";
@@ -14,7 +15,8 @@ const baseOAuthUrl = "https://app.pagerduty.com/oauth";
 const authParams = {
     response_type: 'code',
     client_id: config.PD_CLIENT_ID,
-    redirect_uri: config.REDIRECT_URI
+    redirect_uri: config.REDIRECT_URI,
+    state: stateParm // optional
 };
 const authUrl = `${baseOAuthUrl}/authorize?${qs.stringify(authParams)}`;
 
@@ -36,6 +38,9 @@ app.get('/callback', (req, res) => {
         res.send(`<h1>PagerDuty OAuth2 Sample</h1><div style="color:red;">Error: ${req.query.error}</div><div style="color:red;">${req.query.error_description}</div>`);
         return;
     }
+    // printing state that was passed in during the initial auth request
+    console.log(`state: ${req.query.state}`);
+
     const tokenParams = {
         grant_type: `authorization_code`,
         client_id: config.PD_CLIENT_ID,
@@ -52,6 +57,7 @@ app.get('/callback', (req, res) => {
             console.error(error);
             return;
         }
+
         // Use the access token to make a call to the PagerDuty API
         const pd = new pdClient(body.access_token, body.token_type);
         pd.users.getCurrentUser({})

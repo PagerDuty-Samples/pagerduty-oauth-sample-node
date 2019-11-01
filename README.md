@@ -43,13 +43,14 @@ const baseOAuthUrl = "https://app.pagerduty.com/oauth";
 const authParams = {
     response_type: 'code',
     client_id: config.PD_CLIENT_ID,
-    redirect_uri: config.REDIRECT_URI
+    redirect_uri: config.REDIRECT_URI,
+    state: stateParm // optional
 };
 const authUrl = `${baseOAuthUrl}/authorize?${qs.stringify(authParams)}`;
 ```
-The values for `client_id` and `redirect_uri` are taken from `config.json`, and `response_type` is important as it tells PagerDuty what type of flow is being initiated. In this case, by setting `response_type: 'code'` the flow is an Authorization Grant Flow.
+The values for `client_id` and `redirect_uri` are taken from `config.json`, and `response_type` is important as it tells PagerDuty what type of flow is being initiated. In this case, by setting `response_type: 'code'` the flow is an Authorization Grant Flow. The `state` parameter is entirely optional. This is used when information about the state of app is needed at the end of the OAuth flow. For more information on the `state` parameter see the [Authorization Code Grant](https://www.oauth.com/oauth2-servers/server-side-apps/authorization-code/) article on [oauth.com](https://oauth.com).
 
-A successful response from calling the `https://app.pagerduty.com/oauth/authorize` endpoint should result in PagerDuty calling the `redirect_uri` you specified, which is the `/callback` in this project. The function at `/callback` is expecting PagerDuty to send a `code` in the query string. Using this `code` and the `PD_CLIENT_SECRET` in `config.json` you are now ready to request an access token. 
+A successful response from calling the `https://app.pagerduty.com/oauth/authorize` endpoint should result in PagerDuty calling the `redirect_uri` you specified, which is the `/callback` in this project. The function at `/callback` is expecting PagerDuty to send a `code` in the query string. Using this `code` and the `PD_CLIENT_SECRET` in `config.json` you are now ready to request an access token. The callback will also return the `state` parameter, if that was sent with the `authParams`.
 
 To request an access token from PagerDuty you'll `POST` the values from `tokenParams` shown below in the body of the request to `https://app.pagerduty.com/oauth/token`. 
 
