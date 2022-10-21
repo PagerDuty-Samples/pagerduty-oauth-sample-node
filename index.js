@@ -70,3 +70,39 @@ app.get('/callback', (req, res) => {
     });
 });
 
+app.get('/refresh', (req, res) => {
+    // first check if the request contains any errors and display them to the browser
+    if (req.query.error) {
+        res.send(`<h1>PagerDuty OAuth2 Sample</h1><div style="color:red;">Error: ${req.query.error}</div><div style="color:red;">${req.query.error_description}</div>`);
+        return;
+    }
+    // printing state that was passed in during the initial auth request
+    console.log(`state: ${req.query.state}`);
+
+    const tokenParams = {
+        grant_type: `refresh_token`,
+        client_id: config.PD_CLIENT_ID,
+        client_secret: config.PD_CLIENT_SECRET,
+        refresh_token: req.query.refresh_token
+    };
+
+    // retrieve code and request access token
+    request.post(`${baseOAuthUrl}/token`, {
+        json: tokenParams
+    }, (error, tres, body) => {
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        // Use the access token to make a call to the PagerDuty API
+        const pd = new pdClient(body.access_token, body.token_type);
+        pd.users.getCurrentUser({})
+            .then(uRes => {
+                res.send(`<h1>PagerDuty OAuth2 Sample</h1><div><img src='${JSON.parse(uRes.body).user.avatar_url}' /> <h2>Hello, ${JSON.parse(uRes.body).user.name}!</h2></div>`);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    });
+});
