@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 const stateParm = "yourState";
 
 // baseOAuthUrl -- endpoint for initiating an OAuth flow
-const baseOAuthUrl = "https://app.pagerduty.com/oauth";
+const baseOAuthUrl = "https://identity.pagerduty.com/oauth";
 
 // parameters to send to the `oauth/authorize` endpoint to initiate flow
 const authParams = {
